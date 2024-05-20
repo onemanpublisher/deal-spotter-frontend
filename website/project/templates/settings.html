@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h6 class="border-bottom pb-2 mb-4 h3">Einstellungen</h6>
+        <form action="{{ url_for('methods.handle_settings') }}" method="POST">
+            <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+            <div class="text-center">
+                <div class="d-flex justify-content-center">
+                    <div class="form-check form-switch border-bottom pb-2">
+                        <input class="form-check-input" type="checkbox" id="NotificationflexSwitch" name="state" {% if current_user.enable_notifications %} checked {% endif %}>
+                        <label class="form-check-label" for="NotificationflexSwitch">Benachrichtigungen für Angebote dauerhaft aktivieren/deaktivieren</label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+        </form>
+        {% if current_user.role == 1 %}
+        <form class="mt-4" action="{{ url_for('methods.clear_cache') }}" method="POST">
+            <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+            <div class="text-center">
+                <div class="d-flex justify-content-center">
+                    <button class="btn btn-outline-success" type="submit" aria-label="clear">clear cache</button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}

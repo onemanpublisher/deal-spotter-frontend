@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="google-adsense-account" content="ca-pub-8697169967636795">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Finden Sie die besten Lebensmittelangebote in aktuellen Prospekten von Einkaufsläden. Spart Zeit und Geld auf unserer Webseite!">
+	<title>DealSpotter</title>
+<!-- CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel="icon" href="{{ url_for('static', filename='image/favicon.ico') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/comment-section.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/rating-stars.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- JavaScript -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script> 
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.autocomplete.min.js') }}"></script>
+{% if request.cookies.get('consent') == 'accepted' %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-M084TKCJKF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-M084TKCJKF', {
+      cookie_flags: 'max-age=31536000;secure;samesite=none'
+  });
+  </script>
+{% endif %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8697169967636795" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-xl navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand zoom" href="{{ url_for('main.index') }}"><img style="max-height:110px; max-width:110px;" width="110" height="25" src="{{ url_for('static', filename='image/Deal-Spotter.png') }}" alt="DealSpotter" loading="lazy"></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item"><a class="nav-link {{ 'active' if 'prospekte' in get_current_url else '' }}" aria-current="page" href="{{ url_for('main.prospects') }}">Prospekte</a></li>
+              <li class="nav-item"><a class="nav-link {{ 'active' if 'angebote' in get_current_url else '' }}" href="{{ url_for('main.items') }}">Angebote</a></li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ 'active' if 'kategorie' in get_current_url else '' }}" href="#" id="navbarDropdownCategories" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Kategorien
+                </a>
+                <ul style="min-width:275px;" class="dropdown-menu" aria-labelledby="navbarDropdownCategories">
+                  {% for category in load_categories_keys %}
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('main.items', category=category) }}">
+                        {{ category }}
+                        {% if category in load_available_categories_counts and load_available_categories_counts[category] > 0 %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">{{ load_available_categories_counts[category] }}</span>
+                        {% else %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">0</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('main.items') }}">
+                        Ohne Kategorie
+                        {% if 'Ohne Kategorie' in load_available_categories_counts and load_available_categories_counts['Ohne Kategorie'] > 0 %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">{{ load_available_categories_counts['Ohne Kategorie'] }}</span>
+                        {% else %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">0</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                </ul>
+              </li>
+
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle {{ 'active' if 'markt' in get_current_url else '' }}" href="#" id="navbarDropdownMarket" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Markt
+                </a>
+                <ul style="min-width:200px;" class="dropdown-menu w-auto" aria-labelledby="navbarDropdownMarket">
+                  {% for market in load_available_markets %}
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('main.items', market=market) }}">
+                        {{ market }}
+                        {% if market in load_available_markets_counts and load_available_markets_counts[market] > 0 %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">{{ load_available_markets_counts[market] }}</span>
+                        {% else %}
+                          <span style="float:right;" class="badge text-bg-primary rounded-pill align-middle">0</span>
+                        {% endif %}
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+            <ul class="navbar-nav mb-2 mb-lg-0">
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('main.notification') }}">
+                <i class="fa-solid fa-bell"></i> Benachrichtigungen</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-custom-class="custom-popover" data-bs-toggle="popover"><i class="fa-solid fa-location-dot"></i> Standort
+                  {% if current_user.location %}
+                   - {{ current_user.location }}
+                  {% elif request.cookies.get('location') %}
+                    - {{ request.cookies.get('location') }}
+                  {% endif %}</a>
+                <script>
+                  document.addEventListener('DOMContentLoaded', function () {
+                    const popoverTrigger = document.querySelector('[data-bs-toggle="popover"]');
+                    const popover = new bootstrap.Popover(popoverTrigger, {
+                      container: 'body',
+                      title: 'Standortauswahl',
+                      html: true,
+                      placement: 'bottom',
+                      sanitize: false,
+                      content: `
+                        <div class="text-center" id="PopoverContent">
+                          <form id="formLocation" method="POST">
+                            <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+                            <input type="hidden" name="latitude" value="">
+                            <input type="hidden" name="longitude" value="">
+                            <div class="mx-auto"><span class="h6">Standort manuell eingeben:</span></div>
+                            <div class="input-group mx-auto">
+                              <input id="autoCompleteSuggestionLocations" type="location" name="location" autocomplete="off" class="form-control" placeholder="Suche Ort"
+                                      aria-label="Setze deinen Standort für optimale Ergebnisse" aria-label="Location" aria-describedby="button-addon1">
+                              <button id="manuallyDetectButton" type="submit" class="btn btn-outline-primary" type="button" data-bs-toggle="popover" data-placement="bottom"
+                                      data-html="true" data-title="Search">
+                                  <i class="fas fa-search"></i>
+                              </button>
+                            </div>
+                            <button id="autoDetectButton" type="submit" class="btn btn-primary mt-3 mx-auto"><i class="fa-solid fa-location-dot"></i> Standort automatisch ermitteln</button>
+                            <button id="resetLocationButton" type="submit" class="btn btn-secondary mt-2 mx-auto">Standort zurücksetzen</button>
+                            {% if current_user.location %}
+                              <div class="text-body-secondary mt-1">Bereits ausgewählter Standort {{ current_user.location }}</div>
+                            {% elif request.cookies.get('location') %}
+                              <div class="text-body-secondary mt-1">Bereits ausgewählter Standort {{ request.cookies.get('location') }}</div>
+                            {% endif %}
+                        </form>
+                        </div>
+                      `,
+                    });
+
+                    popoverTrigger.addEventListener('shown.bs.popover', function () {
+                      $('#autoCompleteSuggestionLocations').autocomplete({
+                        deferRequestBy: 300,
+                        serviceUrl: '{{url_for("methods.suggestion_locations")}}',
+                        dataType: 'json'
+                      });
+
+                      const autoDetectButton = document.getElementById('autoDetectButton');
+                      const manuallyDetectButton = document.getElementById('manuallyDetectButton');
+                      const resetLocationButton = document.getElementById('resetLocationButton');
+
+                      autoDetectButton.addEventListener('click', async function(event) {
+                        event.preventDefault(); // prevent post
+                        document.getElementById('formLocation').action = "{{ url_for('methods.set_automatically_location_post') }}";
+                        try {
+                          await getLocation();
+                          document.getElementById('formLocation').submit();
+                        } catch (error) {
+                            console.error("Error getting location:", error);
+                        }
+                      });
+                      manuallyDetectButton.addEventListener('click', function() {
+                          document.getElementById('formLocation').action = "{{ url_for('methods.set_manually_location_post') }}";
+                          document.getElementById('formLocation').submit();
+                      });
+                      resetLocationButton.addEventListener('click', function() {
+                        document.getElementById('formLocation').action = "{{ url_for('methods.reset_location_post') }}";
+                        document.getElementById('formLocation').submit();
+                      });
+                    });
+
+                    // close when outside
+                    document.addEventListener('click', function (event) {
+                      var popoverElement = document.getElementsByClassName("popover")[0];
+                      if (popoverElement && !popoverElement.contains(event.target)) {
+                        popover.hide();
+                      }
+                    });
+                  });
+
+                </script>
+              </li>
+              <script>
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+                const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {
+                    html: true // Enable HTML content
+                }));
+              </script>
+              <style>
+                .custom-popover {
+                  --bs-popover-max-width: 300px !important;
+                  --bs-popover-border-color: var(--bs-primary);
+                  --bs-popover-header-bg: var(--bs-primary);
+                  --bs-popover-header-color: var(--bs-white);
+                }
+              </style>
+
+              {% if current_user.is_authenticated %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa fa-user" aria-hidden="true"></i> Konto
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <li class="nav-item"><a class="nav-link" href="{{ url_for('main.watchlist') }}">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i> Einkaufsliste</a>
+                  </li>
+                  <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}"><i class="fa-solid fa-user"></i> Profil</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{ url_for('main.settings') }}"><i class="fa-solid fa-gear"></i> Einstellungen</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}"><i class="fa fa-sign-out" aria-hidden="true"></i> Ausloggen</a></li>
+                </ul>
+              </li>
+              {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}"><i class="fa fa-user" aria-hidden="true"></i> Anmelden</a></li>
+              {% endif %}
+            </ul>
+            <form action="{{ url_for('main.search') }}" method="GET" class="d-flex" id="searchForm">
+              <div class="input-group">
+                <input id="autoCompleteSuggestionSearch" autocomplete="off" name="search" class="form-control" type="search" placeholder="Suche nach Angeboten.." aria-label="Search" required>
+                <button class="btn btn-outline-success" type="submit" aria-label="Suchen">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </form>
+            <script>
+              document.addEventListener('DOMContentLoaded', e => {
+                $('#autoCompleteSuggestionSearch').autocomplete({
+                    deferRequestBy: 300,
+                    serviceUrl: '{{url_for("methods.suggestion_items")}}',
+                    dataType: 'json',
+                    onSelect: function (suggestion) {
+                      handleSearch();
+                  }
+                });
+            }, false);
+            function handleSearch() {
+              event.preventDefault();
+              document.getElementById('searchForm').submit();
+            }
+            </script>
+          </div>
+        </div>
+      </nav>
+	<section class="content">
+		{% block content %}
+		{% endblock %}
+	</section>
+  {% if request.cookies.get('consent') == none %}
+    {% include 'cookie_consent.html' %}
+  {% endif %}
+</body>
+<script>
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    showPosition(position);
+                    resolve();
+                },
+                (error) => {
+                    reject(error);
+                }
+            );
+        } else {
+            reject("Geolocation is not supported by this browser.");
+        }
+    });
+}
+
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    var formLocation = document.getElementById('formLocation');
+    latitudeInput = formLocation.querySelector('input[name="latitude"]');
+    longitudeInput = formLocation.querySelector('input[name="longitude"]');
+    latitudeInput.value = latitude;
+    longitudeInput.value = longitude;
+}
+</script>
+
+<div class="container">
+  <footer class="border-top py-3 my-4">
+    <div class="row mb-3 text-center">
+      <div class="col-4 themed-grid-col"><p style="text-align: left;" class="text-body-secondary">&copy; {{ get_current_year }} onemanpublisher.</p></div>
+      <div class="col-4 themed-grid-col"><a href="/"><img class="zoom" style="max-height:50px; max-width:50px;" width="50" height="27" src="{{ url_for('static', filename='image/logo.png') }}" alt="omp" loading="lazy"></a></div>
+      <div class="col-4 themed-grid-col">    
+        <ul class="nav justify-content-end">
+          <li class="nav-item"><a href="{{ url_for('main.data_privacy') }}" class="nav-link px-2 text-body-secondary">Datenschutz</a></li>
+          <li class="nav-item"><a href="{{ url_for('main.contact') }}" class="nav-link px-2 text-body-secondary">Kontakt</a></li>
+          <li class="nav-item"><a href="{{ url_for('main.about') }}" class="nav-link px-2 text-body-secondary">Impressum</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container text-body-secondary text-center py-4">
+		*Unsere 520€ Fachkraft befindet sich noch in der Ausbildung, 
+		daher kann es zu Fehlern bei der Darstellung von Produkte kommen. 
+		In seltenen Fällen kann es vorkommen, dass Bild, Preis oder Name 
+		nicht übereinstimmen.
+		<br>
+		<br>
+		Entdecken Sie aktuelle Prospekte von verschiedenen 
+		Einkaufsläden mit den besten Angeboten für Lebensmittel. 
+		Wir zeigen Ihnen übersichtlich sortierte Kategorien, damit 
+		Sie bequem die besten Deals finden können. Sparen Sie Zeit 
+		und Geld bei Ihrem Einkauf! Willkommen auf unserer Webseite.
+	</div>
+</footer>
+</div>
+</html>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+	<div class="my-3 p-3 bg-body rounded shadow-sm">
+		<h6 class="border-bottom pb-2 mb-4 h3">Einloggen</h6>
+		<div class="d-flex justify-content-center">
+			<form method="POST" action="{{ url_for('auth.login_post') }}" style="width:680px;">
+				{% with messages = get_flashed_messages(with_categories=True) %}
+				{% if messages %}
+				  <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+					{{ messages[0][1] }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				  </div>
+				{% endif %}
+			  {% endwith %}
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="user" name="user" placeholder="" autofocus>
+					<label for="user">Benutzername oder E-Mail Adresse</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="password" class="form-control" id="password" name="password" placeholder="">
+					<label for="password">Passwort</label>
+				</div>
+				<div class="form-check text-start my-3">
+					<input class="form-check-input" type="checkbox" name="remember">
+					<label class="form-check-label" for="flexCheckDefault">Remember me</label>
+				</div>
+				<button class="btn btn-primary w-100 py-2" type="submit">Einloggen</button>
+				<p><a href="{{ url_for('auth.signup') }}">Du hast noch kein Benutzerkonto erstellt?</a></p>
+			</form>
+		</div>
+	</div>
+</main>
+
+{% endblock %}

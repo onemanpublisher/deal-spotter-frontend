@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h6 class="border-bottom pb-2 mb-4 h3" style="position: relative;">Alle Angebote nach <b>{{ keyword }}</b> sortiert<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_items is none %}0{% else %}{{ total_items }}{% endif %}</span></h6>
+        {% if items %}
+            <div class="row">
+                {% for item in items %}
+                <div class="item col-lg-3 col-6 mb-4 zoom hover-element">
+                    <a class="item-box" style="text-decoration: none; color: black; display: block; height: 100%;" href="{{ url_for('main.get_item_content', item_id=item.id) }}">
+                        <div class="container">
+                            <img class="icon-symbol" width="50" height="50" src="{{ url_for('static', filename='image/logo/' + item.market + '.webp') }}" alt="{{ item.market }}" loading="lazy">
+                            <div class="row custom-row">
+                                <div class="col-12">
+                                <fieldset class="d-flex align-items-center">
+                                    <span>{{ item.amount_ratings }}</span>
+                                    <span class="star-cb-group readonly small-item-stars">
+                                    <input type="radio" id="readonly-rating-5-{{item.id}}" {% if item.rating == 5 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="5">
+                                    <label for="readonly-rating-5-{{item.id}}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="readonly-rating-4-{{item.id}}" {% if item.rating < 5 and item.rating >= 4 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="4" disabled>
+                                    <label for="readonly-rating-4-{{item.id}}" checked><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="readonly-rating-3-{{item.id}}" {% if item.rating < 4 and item.rating >= 3 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="3" disabled>
+                                    <label for="readonly-rating-3-{{item.id}}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="readonly-rating-2-{{item.id}}" {% if item.rating < 3 and item.rating >= 2 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="2" disabled>
+                                    <label for="readonly-rating-2-{{item.id}}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="readonly-rating-1-{{item.id}}" {% if item.rating < 2 and item.rating >= 1 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="1" disabled>
+                                    <label for="readonly-rating-1-{{item.id}}"><i class="fas fa-star"></i></label>
+                                    </span>
+                                </fieldset>
+                                </div>
+                            </div>
+                            <div class="row custom-row-2">
+                            <div class="col-12">
+                                <span class="item-name text-center">
+                                {{ item.name }}
+                                </span>
+                            </div>
+                            </div>
+                            <div class="row custom-row-3">
+                                <div class="col-12">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    {% if item.original_image_rel_resized %}
+                                        <img src="{{ item.original_image_rel_resized }}" width="400" height="400" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                                    {% else %}
+                                        <img src="{{ item.original_image_rel }}" width="400" height="400" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                                    {% endif %}
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <p>Es konnte mit dem Suchbegriff <b>{{ keyword }}</b> keine Angebote gefunden werden!</p>
+            </div>
+        {% endif %}
+    </div>
+    {% if page and total_items > 0 and items|length > 0 and total_items > per_page %}
+    <p>Angebote <b>{{ start_index + 1 }}</b> bis <b>{{ start_index + items|length }}</b> von insgesamt <b>{{ total_items }}</b></p>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('main.search', search=keyword, page=page-1) }}">Zurück</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">Zurück</a></li>
+                    {% endif %}
+                    
+                    {% if page - 3 > 1 %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('main.search', search=keyword, page=1) }}">1</a></li>
+                        {% if page - 3 > 2 %}
+                            <li><span class="pagination-ellipsis page-item">&hellip;</span></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for num in range(page - 3, page + 4) %}
+                        {% set num_pages = (total_items + per_page - 1) // per_page %}
+                        {% if num > 0 and num <= num_pages %}
+                            {% if num == page %}
+                                <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                            {% elif total_items != per_page %}
+                                <li class="page-item"><a class="page-link" href="{{ url_for('main.search', search=keyword, page=num) }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page + 3 < total_items // per_page %}
+                        {% if page + 3 < total_items // per_page - 1 %}
+                            <li><span class="pagination-ellipsis page-item">&hellip;</span></li>
+                        {% endif %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('main.search', search=keyword, page=total_items // per_page + 1) }}">{{ total_items // per_page + 1 }}</a></li>
+                    {% endif %}
+
+                    {% if page < total_items / per_page %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('main.search', search=keyword, page=page+1) }}">Nächste</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link">Nächste</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+
+{% endblock %}

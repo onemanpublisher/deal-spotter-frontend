@@ -1,0 +1,86 @@
+.star-cb-group {
+  font-size: 0;
+}
+
+.star-cb-group * {
+  font-size: 1rem;
+}
+
+.star-cb-group {
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+.star-cb-group > input {
+  display: none;
+}
+
+.star-cb-group > label {
+  display: inline-block;
+  overflow: hidden;
+  text-indent: 9999px;
+  width: 1em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.star-cb-group > label:before {
+  display: inline-block;
+  text-indent: -9999px;
+  content: '\2606';
+  color: #888;
+}
+
+.star-cb-group > input:checked ~ label:before,
+.star-cb-group > input + label:hover ~ label:before,
+.star-cb-group > input + label:hover:before {
+  content: '\2605';
+  color: rgb(255, 164, 28);
+  text-shadow: 0 0 1px #333;
+}
+
+.star-cb-group > .star-cb-clear + label {
+  text-indent: -9999px;
+  width: 0.5em;
+  margin-left: -0.5em;
+}
+
+.star-cb-group > .star-cb-clear + label:before {
+  width: 0.5em;
+}
+
+.star-cb-group:hover > input + label:before {
+  color: #888;
+  text-shadow: none;
+}
+
+.star-cb-group:hover > input + label:hover ~ label:before,
+.star-cb-group:hover > input + label:hover:before {
+  color: rgb(255, 164, 28);
+  text-shadow: 0 0 1px #333;
+}
+
+fieldset {
+  border: 0;
+  border-radius: 1px;
+}
+
+.star-cb-group.readonly {
+  pointer-events: none; /* Make the readonly element unclickable */
+}
+
+@media only screen and (max-width: 375px) {
+  .small-item-stars label {
+    font-size: .6rem;
+  }
+}
+@media only screen and (min-width: 376px) {
+  .small-item-stars label {
+    font-size: .7rem;
+  }
+}
+@media only screen and (min-width: 450px) {
+  .small-item-stars label {
+    font-size: 1rem;
+  }
+}

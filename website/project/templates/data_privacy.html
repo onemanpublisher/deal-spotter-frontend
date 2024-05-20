@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h6 class="border-bottom pb-2 mb-4 h3">Datenschutzerklärung</h6>
+        <p>Im Folgenden informieren wir Sie über die Erhebung personenbezogener Daten bei Nutzung unserer Webseite <b>{{ get_base_url }}</b> von onemanpublisher (nachfolgend omp) und deren Social-Media-Kanäle. Personenbezogene Daten sind alle Daten, die auf Sie persönlich beziehbar sind, z.B. Name, Adresse, E-Mail-Adressen und Seitenaufrufe.</p>
+        <h3 class="h3">1. VERANTWORTLICHER</h3>
+        <p>Verantwortliche für die Datenverarbeitung gem. Art. 4 Abs. 7 EU-Datenschutz-Grundverordnung (nachfolgend: EU-DSGVO) ist:</p>
+        <p>
+            onemanpublisher
+            <br>
+            c/o Luca Stephan Kohls
+            <br>
+            Hellbrookstraße 48
+            <br>
+            22305 Hamburg
+        </p>
+        <p>
+            vertreten durch: Sascha Dolgow (Geschäftsführer)
+            <br>
+            E-Mail: onemanpublisher@gmail.com
+        </p>
+
+        <h3 class="h3">2. GRUNDSÄTZE UNSERER DATENERHEBUNG</h3>
+        <p>(1) Wir erheben in der Regel personenbezogenen Daten im Sinne von Art. 4 Nr. 1 EU-DSGVO: „Alle Informationen, die sich auf eine identifizierte oder identifizierbare natürliche Person (im Folgenden „betroffene Person“) beziehen; als identifizierbar wird eine natürliche Person angesehen, die direkt oder indirekt, insbesondere mittels Zuordnung zu einer Kennung wie einem Namen, zu einer Kennnummer, zu Standortdaten, zu einer Online-Kennung oder zu einem oder mehreren besonderen Merkmalen, die Ausdruck der physischen, physiologischen, genetischen, psychischen, wirtschaftlichen, kulturellen oder sozialen Identität dieser natürlichen Person sind, identifiziert werden kann.“</p>
+        <p>(2) Sollten wir für die Verarbeitung Deiner Daten externe Dienstleister beauftragen, werden wir diese sorgfältig auswählen und gesondert beauftragten, sodass dieser im Rahmen einer Auftragsverarbeitung an den Weisungen von omp gebunden sind und regelmäßig kontrolliert wird. Wenn dieser Dienstleister seinen Sitz in einem Staat außerhalb des Europäischen Wirtschaftsraums hat, informieren wir Dich über die Folgen dieses Umstands in der Beschreibung des Angebotes.</p>
+        <p>(3) Alle nach Nr. 1 erhobenen Daten werden nur so lange gespeichert, wie es für die Zwecke, für die sie verarbeitet werden, erforderlich ist.</p>
+
+        <h3 class="h3">3. WEITERGABE VON DATEN</h3>
+        <p>Eine Übermittlung der von omp erhobenen Daten an Dritte findet grundsätzlich nicht statt, außer in den folgenden gesetzlichen Ausnahmen:</p>
+        <p>
+            a. Du hast nach Art. 6 Abs. 1 S. 1 lit. a EU-DSGVO Deine ausdrückliche Einwilligung dazu erteilt,
+            <br>
+            b. wenn dies gesetzlich zulässig und nach Art. 6 Abs. 1 S. 1 lit. b EU-DSGVO für die Abwicklung von Vertragsverhältnissen mit Dir erforderlich ist,
+            <br>
+            c. es für die Weitergabe eine gesetzliche Verpflichtung nach Art. 6 Abs. 1 S. 1 lit. c EU-DSGVO besteht, und
+            <br>
+            d. wenn die Weitergabe nach Art. 6 Abs. 1 S. 1 lit. f EU-DSGVO zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen erforderlich ist und es kein Grund zur Annahme besteht, dass du ein überwiegendes schutzwürdiges Interesse an einer Nichtweitergabe deiner Daten hast.
+        </p>
+        <h3 class="h3">4. DEINE RECHTE</h3>
+        <p>(1) Du hast gegenüber omp folgende Rechte hinsichtlich der Dich betreffenden erhobenen Daten:</p>
+        <p>
+            a. Recht auf Auskunft nach Art. 15 EU-DSGVO;
+            <br>
+            b. Recht auf Berichtigung nach Art. 16 EU-DSGVO;
+            <br>
+            c. Recht auf Löschung nach Art. 17 EU-DSGVO, soweit nicht die Verarbeitung zur Ausübung des Rechts auf freie Meinungsäußerung und Information, zur Erfüllung einer rechtlichen Verpflichtung, aus Gründen des öffentlichen Interesses oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen erforderlich ist;
+            <br>
+            d. Recht auf Einschränkung der Verarbeitung nach Art. 18 EU-DSGVO, wenn die Richtigkeit der Daten von Dir bestritten wird; wenn die Verarbeitung unrechtmäßig ist, Du jedoch statt Löschen eine Einschränkung verlangst; wenn wir die Daten nicht mehr benötigen, Du dennoch diese zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen benötigst oder Du gem. Art. 21 EU-DSGVO Widerspruch gegen die Verarbeitung eingelegt hast;
+            <br>
+            e. Recht auf Datenübertragbarkeit nach Art. 20 EU-DSGVO;
+            <br>
+            f. Recht auf Widerspruch gegen die Verarbeitung gem. Art. 21 EU-DSGVO (siehe hierzu Nr. 5 dieser Datenschutzerklärung).
+        </p>
+        <p>(2) Du hast zudem das Recht, Dich nach Art. 77 EU-DSGVO bei der zuständigen Datenschutz-Aufsichtsbehörde über die Verarbeitung Deiner personenbezogenen Daten durch omp zu beschweren. Die für omp zuständige Datenschutz-Aufsichtsbehörde ist das Unabhängiges Landeszentrum für Datenschutz Schleswig-Holstein, Holstenstraße 98, 24103 Kiel.</p>
+        <h3 class="h3">5. WIDERSPRUCHSRECHT</h3>
+        <p>Das Recht auf Widerspruch aus Nr. 4 Abs. 2 dieser Datenschutzerklärung umfasst gem. Art. 21 EU-DSGVO insbesondere die folgenden Fälle:</p>
+        <p>
+            (1) Eine eventuell erteilte Einwilligung gem. Art. 7 Abs. 3 EU-DSGVO kannst Du jederzeit widerrufen.
+            <br>
+            (2) Sollten Deine Daten aufgrund der Vertragserfüllung erhoben und verarbeitet worden sein, ist auch ein Widerruf möglich. Einer möglichen Löschung der Daten stehen eventuell gesetzliche Vorgaben entgegen.
+            <br>
+            (3) Sollte sich die Datenverarbeitung auf eine Interessenabwägung stützen, kannst Du Widerspruch gegen die Verarbeitung einlegen. Dies ist der Fall, wenn die Verarbeitung insbesondere nicht zur Erfüllung eines Vertrags mit Dir erforderlich ist, was jedoch jeweils gesondert dargelegt wird. Bei Ausübung eines solchen Widerspruchs bitten wir um Darlegung der Gründe, weshalb omp Deine personenbezogenen Daten nicht wie durchgeführt verarbeiten sollten. In diesem Fallen prüfen die JuLis SH die Sachlage und werden entweder die Datenverarbeitung einstellen bzw. anpassen oder Dir die zwingenden schutzwürdigen Gründe von omp aufzeigen, aufgrund derer die Verarbeitung fortgeführt wird.
+            <br>
+            (4) Über Deinen Widerspruch kannst Du omp unter folgenden Kontaktdaten informieren:
+        </p>
+        <p>
+            onemanpublisher
+            <br>
+            c/o Luca Stephan Kohls
+            <br>
+            Hellbrookstraße 48
+            <br>
+            22305 Hamburg
+        </p>
+        <h3 class="h3">6. DATENSICHERHEIT</h3>
+        <p>Deine Daten werden durch geeignete technische und organisatorische Sicherheitsmaßnahmen bei omp gespeichert und gegen zufällige oder vorsätzliche Manipulation, teilweisen oder vollständigen Verlust, Zerstörung oder gegen den unbefugten Zugriff Dritter geschützt. Diese Maßnahmen entsprechen dem Stand der Technik.</p>
+        <p>Für die Verschlüsselung der Webseite verwendet omp eine SSL-Verschlüsselung. Ob eine Seite verschlüsselt übertragen wird, erkennst Du an der Darstellung des Schlüssel- bzw. dem geschlossen Schloss-Symbols in der Statusleiste Deines Browsers. Wenn du daraufklickst, kannst du weitere Informationen zu dem verwendeten Zertifikat erhalten.</p>
+        <h3 class="h3">7. BESUCH DER WEBSEITEN VON OMP</h3>
+        <h5 class="h5">ZWECK DER VERARBEITUNG</h5>
+        <p>Während deines Besuchs auf einer der Webseiten von omp nimmt dein Endgerät über einen Webbrowser Kontakt zu dem Webserver von omp auf, damit du die Seiten abrufen kannst. Dabei muss man sich weder identifizieren noch anmelden. Die Zuordnung deiner Webseitenaufrufe erfolgt auf dem Server von omp auf Basis deiner IP-Adresse. Diese Daten benötigt omp, um dir den Zugriff auf den Webseiten von omp zu ermöglichen.</p>
+        <p>omp verwendet zum Betreiben der Webseiten Cookies, die auf Deinem Rechner gespeichert werden. Cookies sind kleine Textdateien, die auf Deiner Festplatte sowie dem von Dir verwendeten Browser gespeichert werden und durch welche der Stelle, die das Cookie setzt, bestimmte Informationen zufließen.</p>
+        <p>Du hast die Möglichkeit, das Abspeichern von Cookies auf Deinem Rechner durch entsprechende Einstellung in Deinem Browser zu verhindern. Hierdurch könnte allerdings der Funktionsumfang des Angebotes von omp eingeschränkt werden. Die Cookies sind rein technischer Natur und dienen zum Betrieb der Seite.</p>
+        <p>Zusätzlich speichert omp die Aufrufe und andere Kommunikation mit unserem Webserver in einem Logfile für vier Wochen. Diese Logfiles verwendet omp zur technischen Fehlersuche und zur Protokollierung möglicher Angriffe oder Unautorisierter Zugriffe auf die Systeme von omp. Darüber hinaus erstellt omp aus den Logfiles Auswertungen zur Optimierung der Dienste. Diese Auswertungen erfolgen dabei in anonymer Form, dabei werden die Aufrufdaten zusammengefasst Einzeleinträge und IP-Adresse gelöscht. Dadurch wird gewährleistet, dass keine personenbezogenen Daten unnötig lange gespeichert werden.</p>
+        <p>Diese Logs beinhalten folgende Informationen:</p>
+        <p>
+            a. IP-Adresse
+            <br>
+            b. Datum und Uhrzeit der Anfrage
+            <br>
+            c. Zeitzonendifferenz zur GMT
+            <br>
+            d. Inhalt der Anforderung (konkrete Webseite)
+            <br>
+            e. Zugriffsstatus
+            <br>
+            f. jeweils übertragene Datenmenge
+            <br>
+            g. Webseite, von der die Anforderung kommt
+            <br>
+            h. Browser, Betriebssystem und dessen Oberfläche
+        </p>
+
+        <h5 class="h5">RECHTLICHE GRUNDLAGE</h5>
+        <p>Die Verarbeitung der erzeugten oben genannten personenbezogenen Daten, durch den Besuch der Webseiten von omp, erfolgt auf Grundlage berechtigten Interesses (Art. 6 Abs. 1 lit. f EU-DSGVO) zur Wahrung der Integrität und Stabilität der Webseiten, zur Verbesserung der Nutzungserfahrung, sowie in einem Angriffsfall rechtliche Schritte gegen den Angreifer vornehmen zu können.</p>
+
+        <h5 class="h5">VERPFLICHTUNG ZUR BEREITSTELLUNG DEINER DATEN</h5>
+        <p>Es besteht keine Verpflichtung deinerseits diese Daten zur Verfügung zu stellen, jedoch ist dann die Nutzung der Webseiten von omp nicht möglich.</p>
+
+        <h5 class="h5">WEITERGABE DER DATEN UND BETEILIGTE PERSONEN</h5>
+        <p>Die Verarbeitung der hier genannten Daten erfolgt vollautomatisiert.</p>
+        <p>Die Webseiten von omp werden über Server der Firma:</p>
+        <p>
+            STRATO AG
+            <br>
+            Otto-Ostrowski-Straße 7
+            <br>
+            10249 Berlin
+        </p>
+        <p>betrieben, die in unserem Auftrag (Art. 28 EU-DSGVO) als Dienstleister für Hosting Services tätig wird.</p>
+        <p>Dauer der Speicherung</p>
+        <p>Die Logfiles werden für vier Wochen gespeichert, sofern omp sie nicht zur Durchsetzung rechtlicher Schritte – bis zum Abschluss dieser – benötigen. Alle weiteren Daten werden unmittelbar gelöscht.</p>
+
+        <h5 class="h5">KONTAKTAUFNAHME, BEITRITTSERKLÄRUNG UND SPENDEN</h5>
+        <p>Wenn Du mit omp Kontakt aufnimmst (beispielsweise per E-Mail, ein Kontaktformular oder über Social Media wie z.B. Instagram oder Facebook) werden Deine Angaben zur Bearbeitung Deines Kontaktes verarbeitet. Dabei können Deine Daten in einem CRM-System gespeichert werden.</p>
+
+        <h5 class="h5">ZWECK DER VERARBEITUNG</h5>
+        <p>Sofern Du nur Kontakt mit omp aufnimmst, werden deine Daten nur verarbeitet, um deine Anfrage zu bearbeiten sowie für interne Analysen von Anfragen, um diese beispielsweise bewerten zu können.</p>
+        <p>Solltest Du das Kontaktformular von omp ausfüllen, so werden diese Daten von der entsprechenden Abteilung verarbeitet.</p>
+        <p>Grundsätzlich verarbeitet omp stets deinen Namen – im Falle von Social Media zusätzlich deinen Benutzernamen). Bei Anfragen über das Kontaktformular zusätzlich deine vor dir angegebene E-Mail-Adresse oder Telefonnummer, um deine Anfrage beantworten zu können.</p>
+
+        <h5 class="h5">RECHTLICHE GRUNDLAGE</h5>
+        <p>Die Verarbeitung deiner personenbezogenen Daten durch Kontaktaufnahmen über Social Media und ein Kontaktformular von omp erfolgt aufgrund eines Berechtigten Interesses (Art. 6 Abs. 1 lit. f EU-DSGVO).</p>
+
+        <h5 class="h5">VERPFLICHTUNG ZUR BEREITSTELLUNG DEINER DATEN</h5>
+        <p>Es besteht keine Verpflichtung deinerseits diese Daten zur Verfügung zu stellen, ohne diese Daten ist es dir jedoch nicht möglich mit omp Kontakt aufzunehmen.</p>
+
+        <h5 class="h5">WEITERGABE DER DATEN UND BETEILIGTE PERSONEN</h5>
+        <p>Deine Daten werden intern an die zuständigen Personen bzw. der Abteilung weitergegeben. Bei der Nutzung von Social Media Plattformen ist dem Betreiber automatisch bekannt, dass du omp kontaktiert hast.</p>
+
+        <h5 class="h5">DAUER DER SPEICHERUNG</h5>
+        <p>Kontaktaufnahmen per Social Media speichert ino für zwei Jahre, bei einer Kontaktaufnahme über eine Webseite steht dir die Option zur Verfügung, dass diese Daten nur für sechs Monate gespeichert werden.</p>
+
+        <h3 class="h3">8. NEWSLETTER</h3>
+        <p>Aktuell versendet omp keine Newsletter.</p>
+
+        <h3 class="h3">9. SOCIAL MEDIA</h3>
+        <p>omp betreibt Onlinepräsenzen innerhalb unterschiedlichster Sozialer Netzwerke.</p>
+        <p>Hierbei weist dich omp explizit darauf hin, dass Deine Daten gegebenenfalls auch außerhalb der Europäischen Union (EU) verarbeitet werden können. Dies kann Risiken bewirken, da es erschwert sein kann, Deine Rechte nach der EU-DSGVO durchzusetzen. Anbieter aus den USA (z.B. Instagram und Facebook), die nach dem EU-Privacy-Shield zertifiziert sind, verpflichten sich die EU-Standards im Datenschutz einzuhalten.</p>
+        <p>Dabei können die Anbieter Deine Daten für Werbezwecke, Marktforschung und ähnliches verarbeiten. Die erhobenen Daten können mithilfe von Cookies und über Benutzerkonten genutzt werden, um außerhalb der Plattform Werbung zu schalten oder Nutzungsverhalten und Interessen zu sammeln und auszuwerten.</p>
+        <p>Im Falle von Auskunftsanfragen musst du Dich – wie zur Nutzung Deiner Rechte – an die Anbieter wenden, da nur diese Zugriff auf Deine Daten haben. Nachfolgend verweisen wir daher auf die Datenschutzerklärung, sowie Widerspruchsmöglichkeiten:</p>
+        <p>
+            (1) Instagram (Meta Platforms Ireland Limited, 4 Grand Canal Square, Grand Canal Harbour, Dublin 2, Irland):
+            <br>
+            Datenschutzerklärung/Opt-Out: http://instagram.com/about/legal/privacy/.
+        </p>
+        <p>
+            (2) Google/YouTube (Google Ireland Ltd., Gordon House, Barrow Street, Dublin 4, Irland):
+            <br>
+            Datenschutzerklärung: https://policies.google.com/privacy
+            <br>
+            Opt-Out: https://adssettings.google.com/authenticated
+        </p>
+        <p>
+            (3) Twitter (Twitter International Unlimited Company, z.H.: Datenschutzbeauftragter, One Cumberland Place, Feniarn Street, Dublin 2, Irland):
+            <br>
+            Datenschutzerklärung: https://twitter.com/de/privacy
+            <br>
+            Opt-Out: https://twitter.com/personalization
+        </p>
+        <p>
+            (4) Facebook (Meta Platforms Ireland Limited, 4 Grand Canal Square, Grand Canal Harbour, Dublin 2, Irland):
+            <br>
+            Datenschutzerklärung: https://www.facebook.com/privacy/explanation
+            <br>
+            Datenschutzerklärungen für Seiten: https://www.facebook.com/legal/terms/information_about_page_insights_data
+            <br>
+            Opt-Out: https://www.facebook.com/ads/preferences/?entry_product=ad_settings_screen
+        </p>
+        <p>
+            (5) Zoom (Lionheart Squared Ltd., Attn: Data Privacy, 2 Pembroke House, Upper Pembroke Street 28-32, Dublin 2, Irland):
+            <br>
+            Datenschutzerklärung: https://explore.zoom.us/de/privacy/
+        </p>
+        <p>
+            (6) Linktree (Instant EU GDPR Representative Ltd., 69 Esker Woods Drive, Lucan Co., Dublin, Irland)
+            <br>
+            Datenschutzerklärung: https://linktr.ee/s/privacy/
+        </p>
+
+        <h3 class="h3">10. EINBINDUNG EXTERNER INHALTE UND DIENSTLEISTUNGEN DRITTER</h3>
+        <p>Aufgrund des berechtigten Interesses von omp zur Optimierung der Webseiten und dessen Darstellung werden Dienste Dritter, um zum Beispiel Videos, Schriftarten oder Bilder (nachfolgend als Inhalt) einzubinden, genutzt.</p>
+        <p>Dies setzt voraus, dass Drittanbieter von Inhalten deine IP-Adresse erhalten. Daher ist zur Darstellung dieses Inhalts eine IP-Adresse erforderlich. Dritte können auch Pixel-Tags (unsichtbare Grafiken, auch als „Web Beacons“ bezeichnet) zu Statistik- oder Marketingzwecke verwenden. Mit diesen „Web Beacons“ können sie die Informationen auf dieser Seite auswerten. Pseudonymisierte Informationen können auch in Cookies gespeichert werden und dabei neben technischen Informationen zu deinem Browser und Betriebssystem auch Informationen zur Besuchszeit, verweisende Links speichern und mit Informationen aus anderen Quellen verbunden werden.</p>
+
+        <h5 class="h5">YOUTUBE</h5>
+        <p>
+            Wir binden Videos über die Plattform „YouTube“ der Google Ireland Ltd. (Gordon House, Barrow Street, Dublin 4, Irland) ein.
+            <br>
+            Datenschutzbestimmungen: https://www.google.com/policies/privacy/
+            <br>
+            Opt-Out: https://adssettings.google.com/authenticated
+        </p>
+
+        <h5 class="h5">GOOGLE RECAPTCHA</h5>
+        <p>
+            Wir nutzen den Dienst „Google reCAPTCHA“ (nachfolgend „reCAPTCHA“) der Google Ireland Ltd. (Gordon House, Barrow Street, Dublin 4, Irland) ein.
+            <br>
+            Datenschutzbestimmungen: https://www.google.com/policies/privacy/
+            <br>
+            Opt-Out: https://adssettings.google.com/authenticated
+        </p>
+
+        <h5 class="h5">ZWECK DER VERARBEITUNG</h5>
+        <p>Dieser „reCAPTCHA“ Dienst wird eingesetzt, um zu überprüfen ob die Eingaben über die Formulare (s. Kontaktaufnahme, Beitrittserklärung und Spenden) durch dich bzw. einen Menschen erfolgen oder durch ein Automatisierten Dienst/Bot. Da die Analyse im Hintergrund läuft, wirst du nicht darauf hingewiesen, dass diese erfolgt. Dabei wertet „reCAPTCHA“ unterschiedliche Informationen aus (dazu gehören deine IP-Adresse, die Dauer die du auf der Webseite verbringst, Mausbewegungen usw.). Diese Daten werden an Google weitergeleitet.</p>
+
+        <h5 class="h5">RECHTLICHE GRUNDLAGE</h5>
+        <p>Diese Analyse erfolgt auf Grundlage der berechtigten Interessen von omp zum Schutz vor Spam und falschen Daten.</p>
+
+        <h5 class="h5">WIDERSPRUCH UND INFORMATIONEN</h5>
+        <p>Für Datenschutzrechtliche Anfragen und Informationen hast du hier die Datenschutzbestimmungen: https://www.google.com/policies/privacy/ von Google. Falls du diesen Dienst nicht nutzen willst gibt es hier einen Opt-Out: https://adssettings.google.com/authenticated</p>
+
+        <h3 class="h3">11. E-MAIL VERSAND UND HOSTING</h3>
+        <p>Die verwendeten Hosting-Dienste bieten folgende Dienstleistungen: Rechenkapazität, E-Mail, Speicher- und Datenbankdienste, Infrastruktur- und Plattformdienste, Sicherheits- und technische Wartungsdienste, um diesen Online-Dienst zu betreiben.</p>
+        <p>Hier verarbeitet omp bzw. der Hosting-Anbieter, die unter Nr. 7 (Besuch der Webseiten von omp) genannten Daten gem. Art. 6 Abs. 1 lit f. EU-DSGVO. Zusätzlich besteht eine Auftragsverarbeitung zwischen dem Hosting-Anbieter und omp nach Art. 28 EU-DSGVO. Logfile-Daten werden für die Dauer von maximal vier Wochen gespeichert und danach gelöscht. Zu Beweiszwecken können Daten, die dafür notwendig sind, bis zur endgültigen Klärung des Vorfalls gespeichert werden.</p>
+
+        <h3 class="h3">12. AKTUALITÄT UND ÄNDERUNG DIESER DATENSCHUTZERKLÄRUNG</h3>
+        <p>Diese Datenschutzerklärung ist aktuell gültig und hat den Stand Oktober 2022.</p>
+        <p>Durch die Weiterentwicklung der Webseiten von omp kann es aufgrund geänderter gesetzlicher bzw. behördlicher Vorgaben notwendig werden, die Datenschutzerklärung zu ändern.</p>
+        <p>Die jeweils aktuelle Datenschutzerklärung kannst Du jederzeit auf dieser Webseite unter https://www.vergleich-omp.de/datenschutz abrufen und ausdrucken.</p>
+    </div>
+</main>
+
+{% endblock %}

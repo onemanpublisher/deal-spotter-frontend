@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h6 class="border-bottom pb-2 mb-4 h3" style="position: relative;">Die aktuellsten Prospekte<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_prospects is none %}0{% else %}{{ total_prospects }}{% endif %}</span></h6>
+        <div class="filter d-flex justify-content-end align-items-end mb-4">
+          <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if selected_market %}{{selected_market}}{% else %}Markt{% endif %}
+              </button>
+              <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('main.prospects') }}">Alle Märkte</a></li>
+                  {% for market in load_available_markets %}
+                      <li><a class="dropdown-item" href="{{ url_for('main.prospects', market=market) }}">{{ market }}</a></li>
+                  {% endfor %}
+              </ul>
+          </div>
+        </div>
+        {% if grouped_prospects %}
+            {% for name, prospects_group in grouped_prospects.items() %}
+              <h5 class="border-bottom pb-2 mb-3 h5">{{ name }}</h5>
+              <div class="row category-row">
+                  {% for prospect in prospects_group %}
+                  <div class="item col-lg-3 col-6 mb-4 zoom hover-element">
+                    <a class="item-box" style="text-decoration: none; color: black; display: block; height: 100%;" href="{{ url_for('main.get_prospect_content', prospect_id=prospect.prospect_id) }}">
+                      <div class="container">
+                        <img class="icon-symbol" width="50" height="50" src="{{ url_for('static', filename='image/logo/' + prospect.name + '.webp') }}" alt="{{ prospect.name }}" loading="lazy">
+                        <div class="row custom-row">
+                          <div class="col-12">
+                            <span class="item-name text-center">
+                              {{ prospect.name }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row custom-row">
+                          <div class="col-12">
+                            <span class="item-name text-center">
+                              {% set reference_date_obj = datetime.strptime(prospect.period_end, "%d.%m.%Y") %}
+                            {% set current_date_obj = datetime.strptime(get_current_date, "%d-%m-%Y") %}
+                            {% set day_difference = (reference_date_obj - current_date_obj).days %}
+                            {{ prospect.period_start.split('.')[:2]|join('.') }}. - {{ prospect.period_end.split('.')[:2] | join('.') }}.
+                            </span>
+                          </div>
+                        </div>
+                        <div class="row custom-row-3">
+                            <div class="col-12">
+                              <div class="d-flex justify-content-center align-items-center">
+                                <div class="flip-box">
+                                  <div class="flip-box-inner">
+                                    <div class="flip-box-front">
+                                      {% if prospect.thumbnail_resized %}
+                                        <img src="{{ prospect.thumbnail_resized }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                                      {% else %}
+                                        <img src="{{ prospect.thumbnail }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                                      {% endif %}
+                                    </div>
+                                    {% if prospect.thumbnail_resized %}
+                                      <div class="flip-box-back">
+                                        <img src="{{ prospect.thumbnail_2_resized }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                                      </div>
+                                    {% endif %}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                  </div>
+                  {% endfor %}
+              </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p>Derzeitig gibt es keine aktuellen Prospekte. Versuche es später erneut!</p>
+            </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,64 @@
+<div id="cookie-consent" class="cookie-consent-banner">
+    <div class="cookie-consent-banner__inner">
+      <div class="cookie-consent-banner__copy">
+        <div class="cookie-consent-banner__header"><strong>Wir respektieren Ihre Privatsphäre</strong></div>
+        <div class="cookie-consent-banner__description">
+            Diese Website benutzt Cookies, die für den technischen Betrieb der Website erforderlich sind und stets gesetzt werden. Andere Cookies, um Inhalte und Anzeigen zu personalisieren und die Zugriffe auf unsere Website zu analysieren, werden nur mit Ihrer Zustimmung gesetzt. Außerdem geben wir Informationen zu Ihrer Verwendung unserer Website an unsere Partner für soziale Medien, Werbung und Analysen weiter.
+        </div>
+      </div>
+      <div>
+          <a style="text-decoration: none; color:rgb(35, 82, 124)" href="{{ url_for('main.data_privacy') }}">Informationen zum Datenschutz <i class="fa-solid fa-angles-right"></i></a>
+          <div class="cookie-consent-banner__buttons">
+              <button id="accept-cookie" type="button" class="btn btn-primary">Bestätigen</button>
+              <button id="decline-cookie" type="button" class="btn btn-outline-primary">Ablehnen</button>
+          </div>
+      </div>
+    </div>
+  </div>
+<script>
+    document.getElementById('accept-cookie').addEventListener('click', function () {
+        document.getElementById('cookie-consent').style.display = 'none';
+        fetch('/set_cookie', {
+            method: 'POST',
+            body: new URLSearchParams({ choice: 'accept' }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            if (data.status === 'ok') {
+                loadGoogleAnalytics();
+            }
+        });
+    });
+
+    document.getElementById('decline-cookie').addEventListener('click', function () {
+        document.getElementById('cookie-consent').style.display = 'none';
+        fetch('/set_cookie', {
+            method: 'POST',
+            body: new URLSearchParams({ choice: 'decline' }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+    });
+
+    // Function to load Google Analytics script
+    function loadGoogleAnalytics() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-M084TKCJKF';
+        script.onload = function () {
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', 'G-M084TKCJKF', {
+                cookie_flags: 'max-age=31536000;secure;samesite=none'
+            });
+        };
+        document.head.appendChild(script);
+    }
+</script>

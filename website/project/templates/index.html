@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <div class="my-3 p-3 bg-body rounded shadow-sm">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+          {{ messages[0][1] }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+    <h6 class="border-bottom pb-2 mb-0 h3"><a style="position: relative;" class="remove-decorations" href="{{ url_for('main.prospects') }}">Die aktuellsten Prospekte<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_prospects is none %}0{% else %}{{ total_prospects }}{% endif %}</span></a></h6>
+    <div class="text-center">
+      {% if prospects %}
+        <div class="row">
+          {% for prospect in prospects %}
+            <div class="item col-lg-3 col-6 mb-2 mt-2 zoom hover-element">
+              <a class="item-box" style="text-decoration: none; color: black; display: block; height: 100%;" href="{{ url_for('main.get_prospect_content', prospect_id=prospect.prospect_id) }}">
+                <div class="container">
+                  <img class="icon-symbol" width="50" height="50" src="{{ url_for('static', filename='image/logo/' + prospect.name + '.webp') }}" alt="{{ prospect.name }}" loading="lazy">
+                  <div class="row custom-row">
+                    <div class="col-12">
+                      <span class="item-name text-center">
+                        {{ prospect.name }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row custom-row">
+                    <div class="col-12">
+                      <span class="item-name text-center">
+                        {% set reference_date_obj = datetime.strptime(prospect.period_end, "%d.%m.%Y") %}
+                      {% set current_date_obj = datetime.strptime(get_current_date, "%d-%m-%Y") %}
+                      {% set day_difference = (reference_date_obj - current_date_obj).days %}
+                      {{ prospect.period_start.split('.')[:2]|join('.') }}. - {{ prospect.period_end.split('.')[:2] | join('.') }}.
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row custom-row-3">
+                    <div class="col-12">
+                      <div class="d-flex justify-content-center align-items-center">
+                        <div class="flip-box">
+                          <div class="flip-box-inner">
+                            <div class="flip-box-front">
+                              {% if prospect.thumbnail_resized %}
+                                <img src="{{ prospect.thumbnail_resized }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                              {% else %}
+                                <img src="{{ prospect.thumbnail }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                              {% endif %}
+                            </div>
+                            {% if prospect.thumbnail_resized %}
+                              <div class="flip-box-back">
+                                <img src="{{ prospect.thumbnail_2_resized }}" width="400" height="400" class="d-block w-100" alt="{{ prospect.name }}" draggable="false" loading="lazy">
+                              </div>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="pt-3">
+          <div class="d-grid gap-2">
+            <a href="{{ url_for('main.prospects') }}" class="btn btn-outline-secondary">Weitere Prospekte anzeigen <i class="fa-solid fa-angles-right"></i></a>
+          </div>
+        </div>
+      {% else %}
+        <p>Derzeitig gibt es keine aktuellen Prospekte. Versuche es später erneut!</p>
+      {% endif %}
+    </div>
+  </div>
+
+
+  <div class="my-3 p-3 bg-body rounded shadow-sm">
+    <h6 class="border-bottom pb-2 mb-0 h3"><a style="position: relative;" class="remove-decorations" href="{{ url_for('main.items') }}">Die aktuellsten Angebote<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_items is none %}0{% else %}{{ total_items }}{% endif %}</a></h6>
+    <!-- <div class="text-center"> -->
+    <div>
+      {% if items %}
+        <div class="row">
+        {% for item in items %}
+          <div class="item col-lg-3 col-6 mb-2 mt-2 zoom hover-element">
+            <a class="item-box" style="text-decoration: none; color: black; display: block; height: 100%;" href="{{ url_for('main.get_item_content', item_id=item.id) }}">
+              <div class="container">
+                <img class="icon-symbol" width="50" height="50" src="{{ url_for('static', filename='image/logo/' + item.market + '.webp') }}" alt="{{ item.market }}" loading="lazy">
+                <div class="row custom-row">
+                    <div class="col-12">
+                      <fieldset class="d-flex align-items-center">
+                        <span>{{ item.amount_ratings }}</span>
+                        <span class="star-cb-group readonly small-item-stars">
+                          <input type="radio" id="readonly-rating-5-{{item.id}}" {% if item.rating == 5 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="5">
+                          <label for="readonly-rating-5-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-4-{{item.id}}" {% if item.rating < 5 and item.rating >= 4 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="4" disabled>
+                          <label for="readonly-rating-4-{{item.id}}" checked><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-3-{{item.id}}" {% if item.rating < 4 and item.rating >= 3 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="3" disabled>
+                          <label for="readonly-rating-3-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-2-{{item.id}}" {% if item.rating < 3 and item.rating >= 2 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="2" disabled>
+                          <label for="readonly-rating-2-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-1-{{item.id}}" {% if item.rating < 2 and item.rating >= 1 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="1" disabled>
+                          <label for="readonly-rating-1-{{item.id}}"><i class="fas fa-star"></i></label>
+                        </span>
+                      </fieldset>
+                    </div>
+                </div>
+                <div class="row custom-row-2">
+                  <div class="col-12">
+                    <span class="item-name text-center">
+                      {{ item.name }}
+                    </span>
+                  </div>
+                </div>
+                <div class="row custom-row-3">
+                    <div class="col-12">
+                      <div class="d-flex justify-content-center align-items-center">
+                        {% if item.original_image_rel_resized %}
+                          <img src="{{ item.original_image_rel_resized }}" width="400" height="400" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                        {% else %}
+                          <img src="{{ item.original_image_rel }}" width="400" height="400" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                        {% endif %}
+                      </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="pt-3">
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('main.items') }}" class="btn btn-outline-secondary">Weitere Angebote anzeigen <i class="fa-solid fa-angles-right"></i></a>
+        </div>
+      </div>
+      {% else %}
+        <p>Derzeitig gibt es keine aktuellen Angebote. Versuche es später erneut!</p>
+      {% endif %}
+    </div>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  #prospect-carousel {
+    max-width: 100%; /* Adjust as needed */
+    margin: 0 auto; /* Center the carousel */
+}
+</style>
+<main class="container">
+  <div class="my-3 p-3 bg-body rounded shadow-sm">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+    {% if prospect %} 
+      <h6 class="border-bottom pb-2 mb-4 h3">Prospekt von {{ prospect.name }} vom {{ prospect.period_start.split('.')[:2]|join('.') }}. bis zum {{ prospect.period_end.split('.')[:2]|join('.') }}.</h6>
+    {% else %}
+      <h6 class="border-bottom pb-2 mb-4 h3">Das Prospekt konnte nicht gefunden werden!</h6>
+    {% endif %}
+
+    {% if prospect_pages %}
+      <div id="carousel-prospect" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-interval="100000">
+        <div class="carousel-indicators">
+          {% for index, prospect_page in enumerate(prospect_pages) %}
+          <button type="button" data-bs-target="#carousel-prospect" data-bs-slide-to="{{ index }}" class="{% if index + 1 == page_number %}active{% endif %}" aria-current="{% if index + 1 == page_number %}true{% endif %}" aria-label="Slide {{ index + 1 }}"></button>
+          {% endfor %}
+        </div>
+        <div class="carousel-inner">
+          {% for index, prospect_page in enumerate(prospect_pages) %}
+          <div class="carousel-item {% if index + 1 == page_number %}active{% endif %}">
+            <div class="d-flex justify-content-center align-items-center">
+              <img class="d-block prospect-main-image" src="{{ prospect_page.file_path_rel }}" alt="{{ prospect_page.page_num }}" loading="lazy">
+            </div>
+            <h3 style="margin-bottom: 1.5rem;" class="text-center h4">Seite {{ prospect_page.page_num + 1 }}</h3>
+          </div>
+          {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-prospect" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-prospect" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+      
+      <div class="pt-3">
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('main.prospect_items', prospect_id=prospect.prospect_id if prospect is not none else 0) }}" class="btn btn-outline-secondary">Alle Angebote zum Prospekt anzeigen <i class="fa-solid fa-angles-right"></i></a>
+        </div>
+      </div>
+    {% else %}
+      <p>Das Prospekt konnte nicht gefunden werden!</p>
+    {% endif %}
+</main>
+{% endblock %}

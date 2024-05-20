@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+	<div class="my-3 p-3 bg-body rounded shadow-sm">
+		<h6 class="border-bottom pb-2 mb-4 h3">Registrieren</h6>
+		<div class="d-flex justify-content-center">
+			<form method="POST" action="{{ url_for('auth.signup_post') }}" style="width:680px;">
+				{% with messages = get_flashed_messages(with_categories=True) %}
+				{% if messages %}
+				  <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+					{{ messages[0][1] }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				  </div>
+				{% endif %}
+			  {% endwith %}
+				<div class="form-floating mb-3">
+					<input type="text" class="form-control" id="name" name="name" placeholder="" autofocus>
+					<label for="name">Benutzername*</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="email" class="form-control" id="email" name="email" placeholder="">
+					<label for="email">E-Mail Adresse*</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input type="password" class="form-control" id="password" name="password" placeholder="">
+					<label for="password">Passwort*</label>
+				</div>
+				<div class="form-floating mb-3 pt-3 border-top">
+					<input id="autoCompleteSuggestionLocations" class="form-control" id="location" type="location" name="location" placeholder="">
+					<label for="location">Standort</label>
+				</div>
+				<button class="btn btn-primary w-100 py-2" type="submit">Registrieren</button>
+				<p><a href="{{ url_for('auth.login') }}">Du hast bereits ein Benutzerkonto?</a></p>
+			</form>
+			<script>
+				document.addEventListener('DOMContentLoaded', function () {
+					$('#autoCompleteSuggestionLocations').autocomplete({
+					  deferRequestBy: 300,
+					  serviceUrl: '{{url_for("methods.suggestion_locations")}}',
+					  dataType: 'json'
+					});
+				  });
+			</script>
+		</div>
+	</div>
+</main>
+
+{% endblock %}

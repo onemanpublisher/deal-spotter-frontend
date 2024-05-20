@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">Admin Dashboard</h1>
+<h1 class="Subtitle">edit or delete entries in database.</h1>
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .notification {
+            margin-bottom: 10px;
+            padding: 1.0rem 2.5rem 1.0rem 2.5rem;
+        }         
+        .search-bar {
+            margin-top: 20px;
+            margin-bottom: 20px;
+          }
+    </style>
+
+        <div class="form-container">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% for message in messages %}
+                    {% if message[0] == 'success' %}
+                        <div class="notification is-success">{{ message[1] }}<button class="delete"></button></div>
+                    {% elif message[0] == 'error' %}
+                        <div class="notification is-danger">{{ message[1] }}<button class="delete"></button></div>
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
+
+            <form action="{{ url_for('main.admin') }}" method="GET">
+                <div class="field has-addons search-bar">
+                    <div class="control">
+                        <input class="input" type="text" name="search" placeholder="Search...">
+                    </div>
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th><abbr title="id">id</abbr></th>
+                        <th><abbr title="url">url</abbr></th>
+                        <th><abbr title="title">title</abbr></th>
+                        <th><abbr title="author">author</abbr></th>
+                        <th><abbr title="datetime">datetime</abbr></th>
+                        <th><abbr title="used_short">used in shorts</abbr></th>
+                        <th><abbr title="used_long">used in normal</abbr></th>
+                        <th><abbr title="downloaded">downloaded</abbr></th>
+                        <th><abbr title="trash">trash</abbr></th>
+                        <th><abbr title="needs_refactor">needs refactor</abbr></th>
+                        <th><abbr title="time">time</abbr></th>
+                        <th><abbr title="file_name">file name</abbr></th>
+                        <th><abbr title="update"></abbr></th>
+                        <th><abbr title="delete"></abbr></th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th><abbr title="id">id</abbr></th>
+                        <th><abbr title="url">url</abbr></th>
+                        <th><abbr title="title">title</abbr></th>
+                        <th><abbr title="author">author</abbr></th>
+                        <th><abbr title="datetime">datetime</abbr></th>
+                        <th><abbr title="used_short">used in shorts</abbr></th>
+                        <th><abbr title="used_long">used in normal</abbr></th>
+                        <th><abbr title="downloaded">downloaded</abbr></th>
+                        <th><abbr title="trash">trash</abbr></th>
+                        <th><abbr title="needs_refactor">needs refactor</abbr></th>
+                        <th><abbr title="time">time</abbr></th>
+                        <th><abbr title="file_name">file name</abbr></th>
+                        <th><abbr title="update"></abbr></th>
+                        <th><abbr title="delete"></abbr></th>
+                        </tr>
+                </tfoot>
+                <tbody>
+                {% for video in current_videos %}
+                    <tr>
+                        <form action="{{ url_for('main.admin') }}" method="POST">
+                            <th><input class="input" type="text" name="id_{{ video.id }}" value="{{ video.id }}" readonly></th>
+                            <td><input class="input" type="text" name="url_{{ video.id }}" value="{{ video.url }}"></td>
+                            <td><input class="input" type="text" name="title_{{ video.id }}" value="{{ video.title }}"></td>
+                            <td><input class="input" type="text" name="author_{{ video.id }}" value="{{ video.author }}"></td>
+                            <td><input class="input" type="text" name="datetime_{{ video.id }}" value="{{ video.datetime }}"></td>
+                            <td><input class="input" style="width:35px" type="text" name="used_short_{{ video.id }}" value="{{ video.used_short }}"></td>
+                            <td><input class="input" style="width:35px" type="text" name="used_long_{{ video.id }}" value="{{ video.used_long }}"></td>
+                            <td><input style="width:35px" class="input" type="text" name="downloaded_{{ video.id }}" value="{{ video.downloaded }}"></td>
+                            <td><input style="width:35px" class="input" type="text" name="trash_{{ video.id }}" value="{{ video.trash }}"></td>
+                            <td><input style="width:35px" class="input" type="text" name="needs_refactor_{{ video.id }}" value="{{ video.needs_refactor }}"></td>
+                            <td><input class="input" type="text" name="time_{{ video.id }}" value="{{ video.time }}"></td>
+                            <td><input class="input" type="text" name="file_name_{{ video.id }}" value="{{ video.file_name }}"></td>
+                            <td>
+                                <input type="hidden" name="video_id" value="{{ video.id }}">
+                                <input type="hidden" name="_method" value="PUT">
+                                <button class="button is-success" type="submit">Update</button>
+                            </td>
+                        </form>
+                        <td>
+                            <form action="{{ url_for('main.admin') }}" method="POST">
+                                <input type="hidden" name="video_id" value="{{ video.id }}">
+                                <input type="hidden" name="_method" id="{{ video.id }}" value="DELETE">
+                                <button class="button is-danger " type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if page and total_items > 0 and items|length > 0 %}
+            <p>Angebote <b>{{ start_index + 1 }}</b> bis <b>{{ start_index + items|length }}</b> von insgesamt <b>{{ total_items }}</b></p>
+                <section class="section">
+                    <div class="container">        
+                        <!-- Pagination links -->
+                        <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+                            {% if page > 1 %}
+                                <a class="pagination-previous" href="{{ url_for('main.admin', page=page-1) }}">Previous</a>
+                            {% else %}
+                                <a class="pagination-previous" disabled>Previous</a>
+                            {% endif %}
+            
+                            <ul class="pagination-list">
+                                {% if page - 3 > 1 %}
+                                    <li>
+                                        <a class="pagination-link" href="{{ url_for('main.admin', page=1) }}">1</a>
+                                    </li>
+                                    {% if page - 3 > 2 %}
+                                        <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                    {% endif %}
+                                {% endif %}
+            
+                                {% for num in range(page - 3, page + 4) %}
+                                    {% if num > 0 and num <= total_videos // 25 + 1 %}
+                                        {% if num == page %}
+                                            <li>
+                                                <a class="pagination-link is-current">{{ num }}</a>
+                                            </li>
+                                        {% elif total_items != per_page %}
+                                            <li>
+                                                <a class="pagination-link" href="{{ url_for('main.admin', page=num) }}">{{ num }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+            
+                                {% if page + 3 < total_videos // 25 %}
+                                    {% if page + 3 < total_videos // 25 - 1 %}
+                                        <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                    {% endif %}
+                                    <li>
+                                        <a class="pagination-link" href="{{ url_for('main.admin', page=total_videos // 25 + 1) }}">
+                                            {{ total_videos // 25 + 1 }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+            
+                            {% if page < total_videos // 25 %}
+                                <a class="pagination-next" href="{{ url_for('main.admin', page=page+1) }}">Next</a>
+                            {% else %}
+                                <a class="pagination-next" disabled>Next</a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </section>
+            {% endif %}
+
+    </div>
+</form>
+{% endblock %}

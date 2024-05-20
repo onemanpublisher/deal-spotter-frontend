@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+    <div class="my-3 p-3 bg-body rounded shadow-sm">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+                    {{ messages[0][1] }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endwith %}
+        <h6 class="border-bottom pb-2 mb-4 h3">Fehler</h6>
+        <div class="text-center">
+            <p>Seite konnte nicht gefunden werden!</p>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

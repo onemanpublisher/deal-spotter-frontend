@@ -1,0 +1,3 @@
+user-agent: *
+disallow: /static/prospects/prospect_pages/
+sitemap: https://deal-spotter.de/sitemap.xml

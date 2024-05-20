@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container">
+  <div class="my-3 p-3 bg-body rounded shadow-sm">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="alert-dismissible alert {{ 'alert-danger' if messages[0][0] == 'error' else 'alert-info' if messages[0][0] == 'info' else 'alert-success' if messages[0][0] == 'success' else '' }}" role="alert">
+          {{ messages[0][1] }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endwith %}
+    <h6 class="border-bottom pb-2 mb-4 h3">{{ item.name }} <b>{{ category }}</b></h6>
+    {% if admin == 1 and item %}
+      <form action="{{ url_for('methods.handle_set_category') }}" id="categoryForm" method="POST">
+        <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+        <input type="hidden" name="item_id" value="{{ item.id }}">
+        <input type="hidden" name="item_name" value="{{ item.name }}">
+        <input type="hidden" name="selected_category" id="selectedCategory" value="">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Kategorie auswählen ({{ item.category }})
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            {% for category in load_categories_keys %}
+              <li><a class="dropdown-item" href="#" onclick="selectCategory('{{ category }}')">{{ category }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        <button type="submit" class="btn btn-primary">ändern</button>
+      </form>
+      <script>
+        function selectCategory(category) {
+          // Set the selected category as the value of the hidden input field
+          document.querySelector('#categoryForm input[name="selected_category"]').value = category;
+          // Update the text of the dropdown button with the selected category
+          document.querySelector('#dropdownMenuButton1').textContent = category;
+        }
+        </script>
+    {% endif %}
+
+    {% if item and prospect %}
+      <fieldset class="align-middle d-flex align-items-center">
+        <span>{{ total_ratings }}</span>
+        <span class="star-cb-group readonly">
+          <input type="radio" id="readonly-rating-5-{{item.id}}" {% if item_rating == 5 %}checked="checked"{% endif %} name="readonly_rating" value="5">
+          <label for="readonly-rating-5-{{item.id}}"><i class="fas fa-star"></i></label>
+          <input type="radio" id="readonly-rating-4-{{item.id}}" {% if item_rating < 5 and item_rating >= 4 %}checked="checked"{% endif %} name="readonly_rating" value="4" disabled>
+          <label for="readonly-rating-4-{{item.id}}"><i class="fas fa-star"></i></label>
+          <input type="radio" id="readonly-rating-3-{{item.id}}" {% if item_rating < 4 and item_rating >= 3 %}checked="checked"{% endif %} name="readonly_rating" value="3" disabled>
+          <label for="readonly-rating-3-{{item.id}}"><i class="fas fa-star"></i></label>
+          <input type="radio" id="readonly-rating-2-{{item.id}}" {% if item_rating < 3 and item_rating >= 2 %}checked="checked"{% endif %} name="readonly_rating" value="2" disabled>
+          <label for="readonly-rating-2-{{item.id}}"><i class="fas fa-star"></i></label>
+          <input type="radio" id="readonly-rating-1-{{item.id}}" {% if item_rating < 2 and item_rating >= 1 %}checked="checked"{% endif %} name="readonly_rating" value="1" disabled>
+          <label for="readonly-rating-1-{{item.id}}"><i class="fas fa-star"></i></label>
+        </span>
+      </fieldset>
+      <div class="row">
+        <div class="col-md-6 col-lg-6 col-xl-6 d-flex flex-column order-1 order-md-1 order-lg-1 order-xl-1" style="position: relative;">
+          <div>
+            <a href="#" style="width:none;" class="pop d-flex justify-content-center">
+              <img src="{{ item.original_image_rel }}" id="imagepreview" class="d-block item-image-size" alt="{{ item.name }}" draggable="false" loading="lazy">
+            </a>
+            <a href="{{ url_for('main.get_prospect_content', prospect_id=item.prospect_id, page=item.prospect_page_num + 1) }}"><p class="text-center">im Prospekt anzeigen <i class="fa-solid fa-angles-right"></i></p></a>
+          </div>
+          <img style="max-height:50px; max-width:50px;" class="icon-symbol-increased" src="{{ url_for('static', filename='image/logo/' + prospect.name + '.webp') }}" alt="prospect.name" loading="lazy">
+        </div>
+
+        <div class="col-md-6 col-lg-6 col-xl-6 d-flex flex-column order-2 order-md-2 order-lg-2 order-xl-2">
+          <div class="card">
+            <div class="card-body">
+              <h5 style="height:51px;" class="card-title text-center border-bottom"><b>{{ item.name }}</b></h5>
+              <p style="height: 10%; margin-bottom: 0;" class="card-text text-center">nur {{ item.price }}€</p>
+              {% set reference_date_obj = datetime.strptime(prospect.period_end, "%d.%m.%Y") %}
+              {% set current_date_obj = datetime.strptime(get_current_date, "%d-%m-%Y") %}
+              {% set day_difference = (reference_date_obj - current_date_obj).days %}
+              <p style="height: 10%; margin-bottom: 0;" class="card-text text-center">Gültig vom <span class="{% if day_difference <= 1 %}text-danger{% elif day_difference <= 3 %}text-warning{% endif %}">{{ prospect.period_start.split('.')[:2]|join('.') }}. bis {{ prospect.period_end.split('.')[:2] | join('.') }}.</span></p>
+              <p style="height: 10%; margin-bottom: 0;" class="card-text text-center">Erhältlich bei {{ prospect.name }}</p>
+            </div>
+          </div>
+          <div class="card-body">
+            {% if logged_in %}
+              <form class="d-flex flex-column justify-content-center" id="myForm" action="" method="POST">
+                <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                {% if notification_exists %}
+                  <button type="submit" id="notificationSwitch" class="btn btn-outline-secondary mb-3"><i class="fa-solid fa-bell"></i> Benachrichtigung deaktivieren</button>
+                {% else %}
+                  <button type="submit" id="notificationSwitch" class="btn btn-primary mb-3"><i class="fa-solid fa-bell"></i> Benachrichtigung aktivieren</button>
+                {% endif %}
+                {% if watchlist_exists %}
+                  <button type="submit" id="watchlistSwitch" class="btn btn-outline-secondary"><i class="fa fa-shopping-cart" aria-hidden="true"></i> aus der Einkaufsliste entfernen</button>
+                {% else %}
+                  <button type="submit" id="watchlistSwitch" class="btn btn-primary"><i class="fa-solid fa-cart-arrow-down"></i> in die Einkaufsliste hinzufügen</button>
+                {% endif %}
+              </form>
+              <script>
+                document.getElementById('watchlistSwitch').addEventListener('click', function() {
+                  document.getElementById('myForm').action = "{{ url_for('methods.handle_watchlist_post') }}";
+                  document.getElementById('myForm').submit();
+                });
+                document.getElementById('notificationSwitch').addEventListener('click', function() {
+                    document.getElementById('myForm').action = "{{ url_for('methods.handle_notification_post') }}";
+                    document.getElementById('myForm').submit();
+                });
+              </script>
+            {% else %}
+              <div class="d-flex flex-column justify-content-center">
+                <button type="submit" class="btn btn-primary mb-3" info-text="Du musst eingeloggt sein, um dieses Angebot deiner Benachrichtigungen hinzuzufügen." id="open-modal"><i class="fa-solid fa-bell"></i> Benachrichtigung aktivieren</button>
+                <button type="submit" class="btn btn-primary" info-text="Du musst eingeloggt sein, um dieses Angebot deiner Einkaufsliste hinzuzufügen." id="open-modal"><i class="fa fa-shopping-cart" aria-hidden="true"></i> in die Einkaufsliste</button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+  </div>
+<!-- category assignment -->
+  <div class="container">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6 themed-grid-col"><span class="text-muted">Kategorie -</span>
+          {% if item.category %}
+            {% set all_categories = item.category.split(',') %}
+            {% for item_category in all_categories %}
+              <a href="{{ url_for('main.category', name=item_category) }}">{{ item_category }}</a>{% if not loop.last and loop.length > 1 %},{% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+        <div class="col-md-6 themed-grid-col"><span class="text-muted">Unterkategorie -</span>
+          {% if item.sub_category != 'None' %}
+            {% set all_sub_categories = item.sub_category.split(',') %}
+            {% for item_sub_category in all_sub_categories %}
+              <a href="{{ url_for('main.search', search=item_sub_category) }}">{{ item_sub_category }}</a>{% if not loop.last and loop.length > 1 %},{% endif %}
+            {% endfor %}
+        {% endif %}
+        </div>
+    </div>
+  </div>
+<!-- comments -->
+{% if logged_in %}
+<div class="container">
+  <form action="{{ url_for('methods.rating_post') }}" method="POST">
+    <input type="hidden" name="rating" id="rating" value="value">
+    <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+    <input type="hidden" name="recognition" value="{{ item.recognition_id }}">
+    <fieldset class="align-middle d-flex align-items-center">
+        <!-- Normal rating element -->
+        <span class="star-cb-group">
+            <input type="radio" id="rating-5" {% if rating is not none and rating.rating == 5 %}checked="checked"{% endif %} name="star" value="5">
+            <label style="font-size: 1.7rem;" for="rating-5"><i class="fas fa-star"></i></label>
+            <input type="radio" id="rating-4" {% if rating is not none and rating.rating < 5 and rating.rating >= 4 %}checked="checked"{% endif %} name="star" value="4">
+            <label style="font-size: 1.7rem;" for="rating-4"><i class="fas fa-star"></i></label>
+            <input type="radio" id="rating-3" {% if rating is not none and rating.rating < 4 and rating.rating >= 3 %}checked="checked"{% endif %} name="star" value="3">
+            <label style="font-size: 1.7rem;" for="rating-3"><i class="fas fa-star"></i></label>
+            <input type="radio" id="rating-2" {% if rating is not none and rating.rating < 3 and rating.rating >= 2 %}checked="checked"{% endif %} name="star" value="2">
+            <label style="font-size: 1.7rem;" for="rating-2"><i class="fas fa-star"></i></label>
+            <input type="radio" id="rating-1" {% if rating is not none and rating.rating < 2 and rating.rating >= 1 %}checked="checked"{% endif %} name="star" value="1">
+            <label style="font-size: 1.7rem;" for="rating-1"><i class="fas fa-star"></i></label>
+        </span>
+        <button style="margin-left:7.5px;" class="btn btn-primary mt-2" type="submit">Bewerten</button>
+    </fieldset>
+  </form>
+  <script>
+    // Get all the radio buttons
+    const radioButtons = document.querySelectorAll('input[name="star"]');
+
+    // Add a click event listener to each radio button
+    radioButtons.forEach(radioButton => {
+        radioButton.addEventListener('click', function () {
+            // Update the value of the hidden input field when a star is clicked
+            document.getElementById('rating').value = this.value;
+        });
+    });
+</script>
+{% endif %}
+</div>
+  <div class="d-flex align-items-center justify-content-center mt-3">
+    <div class="container">
+      <div class="row justify-content-center mb-4">
+        <h5>{{ total_comments }} {% if total_comments == 1 %}Kommentar{% else %}Kommentare{% endif %}</h5>
+      </div>
+      <div class="row justify-content-center mb-4">
+        <div class="comments">
+          {% if comments %}
+            {% for comment in comments %}
+            <div class="comment d-flex mb-4">
+              <div class="flex-shrink-0">
+                <div class="avatar avatar-sm rounded-circle">
+                  <img class="avatar-img" src="{{ url_for('static', filename='image/assets/profile.png') }}" alt="profile picture">
+                </div>
+              </div>
+              <div class="flex-grow-1 ms-2 ms-sm-3">
+                <div class="flex-grow-1 ms-2 ms-sm-3" style="position: relative;">
+                  <div class="upvote-symbol">
+                    <span id="upvotes-{{ comment.id }}">{{ comment.upvotes }}</span>
+                    {% if comment.id in comment_upvotes|map(attribute='comment_id') %}
+                      <span style="color:rgb(31, 81, 125);" comment_id="{{ comment.id }}" id="upvote-icon"><i class="fa-solid fa-thumbs-up"></i></span>
+                    {% else %}
+                      {% if logged_in %}
+                        <span style="cursor: pointer; color:rgb(31, 81, 125);" comment_id="{{ comment.id }}" id="upvote-icon"><i class="fa-regular fa-thumbs-up"></i></span>
+                      {% else %}
+                        <span style="cursor: pointer; color:rgb(31, 81, 125);" comment_id="{{ comment.id }}" info-text="Du musst eingeloggt sein, um den Kommentar zu Bewerten." id="open-modal"><i class="fa-regular fa-thumbs-up"></i></span>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                </div>              
+                <div class="comment-meta d-flex align-items-baseline">
+                  <h6 class="me-2">{{ comment.user_name }}</h6>
+                  <span class="text-muted comment-timestamp" data-timestamp="{{ comment.datetime }}Z"></span>
+                </div>
+                <div class="comment-body">
+                  {{ comment.text }}
+                </div>
+                {% if comment.user_id == customer_id %}
+                  <form action="{{ url_for('methods.comment_remove_post') }}" method="POST">
+                    <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                    <input type="hidden" name="recognition_id" value="{{ item.recognition_id }}">
+                    <button type="submit" class="comment-actions text-muted sm float-end" style="background: none; border: none; font-size:small; text-decoration: underline; cursor: pointer;">entfernen</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="comment-form d-flex align-items-center">
+          <div class="flex-shrink-0">
+            <div class="avatar avatar-sm rounded-circle">
+              <img class="avatar-img" src="{{ url_for('static', filename='image/assets/profile.png') }}" alt="">
+            </div>
+          </div>
+          <div class="flex-grow-1 ms-2 ms-sm-3">
+            {% if logged_in %}
+              <form action="{{ url_for('methods.comment_post') }}" method="POST">
+                <textarea style="height:75px;" class="form-control py-0 px-1" name="comment_body" maxlength="500" rows="1" placeholder="Schreibe einen Kommentar zum Produkt..." style="resize: none;"></textarea>
+                <input type="hidden" name="redirect_url" value="{{ get_current_full_url }}">
+                <input type="hidden" name="recognition" value="{{ item.recognition_id }}">
+                <button class="btn btn-primary float-end mt-2" type="submit">Erstellen</button>
+              </form>
+            {% else %}
+              <textarea style="height:75px;" class="form-control py-0 px-1" name="comment_body" maxlength="500" rows="1" placeholder="Schreibe einen Kommentar zum Produkt..." style="resize: none;"></textarea>
+              <button class="btn btn-primary float-end mt-2" info-text="Du musst eingeloggt sein, um einen Kommentar zum Angebot zu schreiben." id="open-modal">Erstellen</button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    {% if page and total_comments > 0 and comments|length > 0 and total_comments > comments_per_page %}
+    <div class="row">
+      <p>Kommentare <b>{{ start_index + 1 }}</b> bis <b>{{ start_index + comments|length }}</b> von insgesamt <b>{{ total_comments }}</b></p>
+      <div class="container">
+          <div class="row">
+              <div class="col">
+                  <ul class="pagination justify-content-center">
+                      {% if page > 1 %}
+                          <li class="page-item"><a class="page-link" href="{{ url_for('main.get_item_content', item_id=item.id, page=page-1) }}">Zurück</a></li>
+                      {% else %}
+                          <li class="page-item disabled"><a class="page-link">Zurück</a></li>
+                      {% endif %}
+                      
+                      {% if page - 3 > 1 %}
+                              <li class="page-item"><a class="page-link" href="{{ url_for('main.get_item_content', item_id=item.id, page=1) }}">1</a></li>
+                          {% if page - 3 > 2 %}
+                              <li><span class="pagination-ellipsis page-item">&hellip;</span></li>
+                          {% endif %}
+                      {% endif %}
+
+                      {% for num in range(page - 3, page + 4) %}
+                        {% set num_pages = (total_comments + comments_per_page - 1) // comments_per_page %}
+                          {% if num > 0 and num <= num_pages %}
+                              {% if num == page %}
+                                  <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                              {% elif total_comments != comments_per_page %}
+                                  <li class="page-item"><a class="page-link" href="{{ url_for('main.get_item_content', item_id=item.id, page=num) }}">{{ num }}</a></li>
+                              {% endif %}
+                          {% endif %}
+                      {% endfor %}
+
+                      {% if page + 3 < total_comments // comments_per_page %}
+                          {% if page + 3 < total_comments // comments_per_page - 1 %}
+                              <li><span class="pagination-ellipsis page-item">&hellip;</span></li>
+                          {% endif %}
+                          <li class="page-item"><a class="page-link" href="{{ url_for('main.get_item_content', item_id=item.id, page=total_comments // comments_per_page + 1) }}">{{ total_comments // comments_per_page + 1 }}</a></li>
+                      {% endif %}
+
+                      {% if page < total_comments / comments_per_page %}
+                          <li class="page-item"><a class="page-link" href="{{ url_for('main.get_item_content', item_id=item.id, page=page+1) }}">Nächste</a></li>
+                      {% else %}
+                          <li class="page-item disabled"><a class="page-link">Nächste</a></li>
+                      {% endif %}
+                  </ul>
+              </div>
+          </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- modal image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imageModalLabel">{{ item.name }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body-image d-flex justify-content-center align-items-center">
+            <img style="padding: 10px; max-width: 100%; height: auto; max-height:500px;" id="imagepreview" src="{{ item.original_image_rel }}" class="d-block img-fluid" alt="Elektrischer Pizzaofen Elektrischer Pizzaofen" draggable="false" loading="lazy">
+        </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function() {
+      $('.pop').on('click', function() {
+        $('#imagepreview').attr('src', $(this).find('img').attr('src'));
+        $('#imageModal').modal('show');   
+      });
+          $('#closemodal').on('click', function() {
+              $('#imageModal').modal('hide');
+          });
+      });
+    </script>
+    {% if logged_in %}
+    <script>
+      // Get all elements with the class "upvote-icon"
+      const upvoteIcons = document.querySelectorAll("#upvote-icon");
+      // Iterate through each upvote icon and attach the click event listener
+      upvoteIcons.forEach(icon => {          
+          icon.addEventListener("click", function() {
+              // Update the icon based on the state for the clicked icon
+              const iconElement = icon.querySelector("i");
+
+              if (iconElement.classList.contains("fa-solid")) {
+                // If it already has the class, do nothing and exit the function
+                return;
+              }
+
+              iconElement.classList.remove("fa-regular");
+              iconElement.classList.add("fa-solid");
+
+              // Send the state to the server for the clicked comment
+              const commentId = icon.getAttribute("comment_id");
+              fetch('/set_comment_upvote', {
+                  method: 'POST',
+                  body: JSON.stringify({ comment_id: commentId, recognition_id: '{{ item.recognition_id }}'}),
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              }).then(response => {
+                  if (response.ok) {
+                      const upvoteCountSpan = document.querySelector(`#upvotes-${commentId}`);
+                      const currentCount = parseInt(upvoteCountSpan.textContent);
+                      upvoteCountSpan.textContent = currentCount + 1;
+                  } else {
+                      // Handle errors
+                  }
+              }).catch(error => {
+                  console.error("Error:", error);
+              });
+          });
+      });
+  </script>
+    {% else %}
+    <!-- modal -->
+    <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Information</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const Modals = document.querySelectorAll("#open-modal");
+      // Attach click event listener to each comment modal
+      Modals.forEach(modal => {
+          modal.addEventListener("click", function () {
+            var text = modal.getAttribute("info-text");
+            var additionalText = "<br>Zum Einloggen oder Registrieren klicke <a href='{{ url_for('auth.login') }}'>hier</a>.";
+            var combinedText = text + ' ' + additionalText;
+            $(".modal-body").html(combinedText);
+            $("#modal").modal("show");
+          });
+      });
+    </script>
+    {% endif %}
+
+    {% else %}
+        <div class="col-12 text-center">
+            <p>Das Angebot konnte nicht gefunden werden!</p>
+        </div>
+    {% endif %}
+</div>
+
+{% if similar_items %}
+<div class="my-3 p-3 bg-body rounded shadow-sm">
+    {% if item.category and all_categories %}
+      <h6 class="border-bottom pb-2 mb-0 h3"><a style="position: relative;" class="remove-decorations" href="{{ url_for('main.category', name=all_categories[0]) }}">Ähnliche Angebote wie {{ item.name }}<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_similar_items is none %}0{% else %}{{ total_similar_items }}{% endif %}</span></a></h6>
+      {% else %}
+      <h6 class="border-bottom pb-2 mb-0 h3"><a style="position: relative;" class="remove-decorations" href="{{ url_for('main.category', name='Ohne Kategorie') }}">Angebote, die dich interessieren könnten<span class="badge text-bg-primary rounded-pill custom-badge">{% if total_similar_items is none %}0{% else %}{{ total_similar_items }}{% endif %}</span></a></h6>
+    {% endif %}
+    <!-- <div class="text-center"> -->
+    <div>
+      <div class="row">
+        {% for item in similar_items %}
+          <div class="item col-lg-3 col-6 mb-2 mt-2 zoom hover-element">
+            <a class="item-box" style="text-decoration: none; color: black; display: block; height: 100%;" href="{{ url_for('main.get_item_content', item_id=item.id) }}">
+              <div class="container">
+                <img class="icon-symbol" width="50" height="50" src="{{ url_for('static', filename='image/logo/' + item.market + '.webp') }}" alt="{{ item.market }}" loading="lazy">
+                <div class="row custom-row">
+                    <div class="col-12">
+                      <fieldset class="d-flex align-items-center">
+                        <span>{{ item.amount_ratings }}</span>
+                        <span class="star-cb-group readonly small-item-stars">
+                          <input type="radio" id="readonly-rating-5-{{item.id}}" {% if item.rating == 5 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="5">
+                          <label for="readonly-rating-5-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-4-{{item.id}}" {% if item.rating < 5 and item.rating >= 4 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="4" disabled>
+                          <label for="readonly-rating-4-{{item.id}}" checked><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-3-{{item.id}}" {% if item.rating < 4 and item.rating >= 3 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="3" disabled>
+                          <label for="readonly-rating-3-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-2-{{item.id}}" {% if item.rating < 3 and item.rating >= 2 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="2" disabled>
+                          <label for="readonly-rating-2-{{item.id}}"><i class="fas fa-star"></i></label>
+                          <input type="radio" id="readonly-rating-1-{{item.id}}" {% if item.rating < 2 and item.rating >= 1 %}checked="checked"{% endif %} name="readonly_rating-{{item.id}}" value="1" disabled>
+                          <label for="readonly-rating-1-{{item.id}}"><i class="fas fa-star"></i></label>
+                        </span>
+                      </fieldset>
+                    </div>
+                </div>
+                <div class="row custom-row-2">
+                  <div class="col-12">
+                    <span class="item-name text-center">
+                      {{ item.name }}
+                    </span>
+                  </div>
+                </div>
+                <div class="row custom-row-3">
+                    <div class="col-12">
+                      <div class="d-flex justify-content-center align-items-center">
+                        {% if item.original_image_rel_resized %}
+                          <img src="{{ item.original_image_rel_resized }}" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                        {% else %}
+                          <img src="{{ item.original_image_rel }}" class="d-block w-100" alt="{{ item.name }}" draggable="false" loading="lazy">
+                        {% endif %}
+                      </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="pt-3">
+        <div class="d-grid gap-2">
+          {% if item.category and all_categories %}
+            <a href="{{ url_for('main.category', name=all_categories[0]) }}" class="btn btn-outline-secondary">Weitere ähnliche Angebote anzeigen <i class="fa-solid fa-angles-right"></i></a>
+            {% else %}  
+            <a href="{{ url_for('main.category', name='Ohne Kategorie') }}" class="btn btn-outline-secondary">Weitere Angebote anzeigen <i class="fa-solid fa-angles-right"></i></a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+{% endif %}
+</main>
+{% endblock %}
